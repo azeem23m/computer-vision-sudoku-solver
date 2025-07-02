@@ -92,16 +92,18 @@ if __name__ == "__main__":
   model = CNN()
   model.load_model('models/model.pth')
 
-  image = cv2.imread('images/1 (1).png')
+  image = cv2.imread('images/pad_screenshot_K3A1F7E7G0.png')
   boxes, img_warp = prepare_image(image.copy())
   grid = []
   for i, box in enumerate(boxes):
 
     prob, pred = model.predict(box)
-    grid.append(pred if prob > 0.7 else 0)
+    grid.append(pred if prob > 0.65 else 0)
     print(f'Box {i+1}: Predicted: {pred}, Probability: {prob:.4f}')
 
-  print(model.predict(boxes[44]))
+  print(model.predict(boxes[19]))
+  cv2.imshow('', boxes[19])
+  # cv2.waitKey(0)
 
   grid = np.array(grid).reshape((9, 9))
   

@@ -5,13 +5,16 @@ from typing import List
 
 IMAGE_DIM = 720
 SINGLE_BOX_DIM = IMAGE_DIM // 9
-MARGIN = 4
+MARGIN = 10
 
 
 def preprocess_image(img: np.ndarray) -> np.ndarray:
 
   # img = cv2.resize(img, (IMAGE_DIM, IMAGE_DIM))
-  img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+  if len(img.shape) == 3 and img.shape[2] == 3:
+      img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+  else:
+      img_gray = img
   img_blurred = cv2.GaussianBlur(img_gray, (9, 9), 0)
   img_thresh = cv2.adaptiveThreshold(img_blurred, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, 2)
 
@@ -55,17 +58,18 @@ def sort_points(points: np.ndarray) -> np.ndarray:
 
 def slice_image(img):
 
-	boxes = []
-	for i in range(9):
-		left = i* SINGLE_BOX_DIM
-		right = i*SINGLE_BOX_DIM + SINGLE_BOX_DIM
-		for j in range(9):
-			top = j*SINGLE_BOX_DIM
-			bottom = j*SINGLE_BOX_DIM + SINGLE_BOX_DIM
+  boxes = []
+  for i in range(9):
+    left = i* SINGLE_BOX_DIM
+    right = i*SINGLE_BOX_DIM + SINGLE_BOX_DIM
+    for j in range(9):
+      top = j*SINGLE_BOX_DIM
+      bottom = j*SINGLE_BOX_DIM + SINGLE_BOX_DIM
 
-			boxes.append(img[left+MARGIN: right-MARGIN, top+MARGIN: bottom-MARGIN])
-	
-	return boxes
+      # processed_box = preprocess_image(img[left+MARGIN: right-MARGIN, top+MARGIN: bottom-MARGIN])
+      boxes.append(img[left+MARGIN: right-MARGIN, top+MARGIN: bottom-MARGIN])
+  
+  return boxes
 
 
 def warp_image(image: np.ndarray, corners: List[np.ndarray]) -> np.ndarray:
@@ -137,5 +141,9 @@ def display_solution(original: np.ndarray, image: np.ndarray, overlay: List[List
 
 if __name__ == "__main__":
 
-  image = cv2.imread('images/image.png')
-  prepare_image(image)
+  image = cv2.imread('images/sudoku-puzzle-13553.png')
+  boxes, img = prepare_image(image)
+
+  print(boxes)
+  cv2.imshow('', img)
+  cv2.waitKey(0)

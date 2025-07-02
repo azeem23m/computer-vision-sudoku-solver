@@ -3,7 +3,7 @@ from model import CNN
 import os
 
 app = Flask(__name__)
-app.config['ALLOWED_EXTENTIONS'] = ['png', 'jpg', 'jpeg']
+app.config['ALLOWED_EXTENTIONS'] = ['png', 'jpg', 'jpeg', 'webp']
 app.model = CNN()
 
 
